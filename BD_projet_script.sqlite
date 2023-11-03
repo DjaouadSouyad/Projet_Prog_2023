@@ -1,0 +1,171 @@
+-- SQLite
+
+--Création des tables et des contraintes liées
+
+--supprimer les tables pour éviter les doublons 
+DROP TABLE IF EXISTS contact;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS package;
+DROP TABLE IF EXISTS contract;
+DROP TABLE IF EXISTS bill;
+
+--créer table contact
+CREATE TABLE IF NOT EXISTS contact (
+    id_contact INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_name TEXT,
+    first_name TEXT NOT NULL,
+    phone_number TEXT NOT NULL,
+    mail_adress TEXT
+);
+
+--créer table client
+CREATE TABLE IF NOT EXISTS client (
+    id_client INTEGER PRIMARY KEY AUTOINCREMENT,
+    name_of_client TEXT NOT NULL,
+    country TEXT NOT NULL,
+    locality TEXT NOT NULL,    
+    adress TEXT,
+    contact_id INTEGER NOT NULL,
+    FOREIGN KEY (contact_id) REFERENCES contact(id_contact)
+);
+
+--créer table package
+CREATE TABLE IF NOT EXISTS package (
+    id_package INTEGER PRIMARY KEY AUTOINCREMENT,
+    name_of_package TEXT NOT NULL,
+    price INTEGER NOT NULL,
+    description TEXT,
+    UNIQUE (name_of_package)
+);
+
+--créer table contract
+CREATE TABLE IF NOT EXISTS contract (
+    id_contract INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    package_id INTEGER NOT NULL,
+    date_start_contract TEXT NOT NULL,
+    status_contract TEXT NOT NULL,
+    date_end_contract TEXT,
+    commentary TEXT,
+    FOREIGN KEY (client_id) REFERENCES client(id_client),
+    FOREIGN KEY (package_id) REFERENCES package(id_package),
+    UNIQUE (client_id, package_id),
+    CHECK (status_contract IN ('finished', 'ongoing')),
+    CHECK (date_start_contract <= date_end_contract OR date_end_contract IS NULL)
+);
+
+--créer table bill
+CREATE TABLE IF NOT EXISTS bill (
+    id_bill INTEGER PRIMARY KEY AUTOINCREMENT,
+    contract_id INTEGER NOT NULL,
+    date_of_bill TEXT NOT NULL,
+    gross INTEGER NOT NULL,
+    discount INTEGER NOT NULL,
+    rising INTEGER NOT NULL,
+    status_bill TEXT NOT NULL,    
+    commentary TEXT,
+    FOREIGN KEY (contract_id) REFERENCES contract(id_contract),
+    CHECK (status_bill IN ('payed', 'not payed')),
+    CHECK (rising = gross - discount)
+);
+
+--Fin création des tables et leurs contraintes--
+
+-- Insertion des données en ma possession dans la table contact
+INSERT INTO contact (last_name, first_name, phone_number, mail_adress)
+VALUES 
+    ('', 'Jeta', '+41793381988', ''),
+    ('', 'Elif', '+41794641549', ''),
+    ('Benseghir', 'Amel', '+41763255401', ''),
+    ('', 'Unal', '+41795094923', ''),
+    ('Mohamed', 'Naima', '+447817642242', ''),
+    ('Kheddouma', 'Zoubir', '+971501947347', ''),
+    ('', 'Gokhan', '+41764410823', '');
+
+-- Insertion des données en ma possession dans la table client
+INSERT INTO client (name_of_client, country, locality, adress, contact_id)
+VALUES 
+    ('Jean-Louis David Lausanne', 'Suisse', '1003 Lausanne', 'Rue Centrale 23', 1),
+    ('Les Barboristes Vevey', 'Suisse', '1800 Vevey', 'Avenue du Général Guisan 52', 2),
+    ('La Pommerouge Vevey', 'Suisse', '1800 Vevey', 'Avenue du Général Guisan 52', 2),
+    ('Lux Aesthetics Switzerland', 'Suisse', '1630 Bulle', 'Route de Riaz 92', 3),
+    ('Black Horse', 'Suisse', '1110 Morges', 'Promenade de Castellane 10', 4),
+    ('White Horse', 'Suisse', '1006 Lausanne', 'Avenue d''Ouchy', 4),
+    ('Naima Mohamed', 'UK', 'Manchester', '', 5),
+    ('Rovamed', 'UAE', 'Dubaï', '', 6),
+    ('Tok Tasty ottoman kitchen', 'Suisse', '1110 Morges', 'Promenade de Castellane 9', 7);
+
+-- Insertion des données en ma possession dans la table package
+INSERT INTO package (name_of_package, price, description)
+VALUES 
+    ('Social media management', 990, 'Best-seller'),
+    ('Content création', 690, 'Axé contenu multimédias'),
+    ('SMM + CC', 1490, 'Fusion de Social media management et Content création'),
+    ('Feed on fleek', 450, 'Planification et actions sur le feed'),
+    ('Community management 1:1', 450, '50.- de sponsoring compris'),
+    ('Ads management', 60, 'Gestion des publicités'),
+    ('Coaching 1:1', 170, 'Audit et expertise'),
+    ('Entrepreneur', 590, 'Spécialisé pour les entrepreneurs'),
+    ('Ads management extra', 80, 'Gestion des publicités poussée'),
+    ('Présentation max. 30 slides', 99, '2 modifications max.'),
+    ('Design Menu/Flyers', 30, '2 modifications max.'),
+    ('Design carte de visite', 30, '2 propositions'),
+    ('Logo simple', 50, '6 propositions');
+
+-- Insertion des données en ma possession dans la table contract
+INSERT INTO contract (client_id, package_id, date_start_contract, status_contract, date_end_contract, commentary)
+VALUES 
+    (1, 1, '2023-01-01', 'ongoing', NULL, 'Contrat en cours pour client 1'),
+    (1, 2, '2023-02-01', 'ongoing', NULL, 'Contrat en cours pour client 1'),
+    (2, 3, '2023-03-01', 'finished', '2023-04-01', 'Contrat terminé pour client 2'),
+    (2, 4, '2023-04-01', 'ongoing', NULL, 'Contrat en cours pour client 2'),
+    (3, 5, '2023-05-01', 'finished', '2023-06-01', 'Contrat terminé pour client 3'),
+    (3, 6, '2023-06-01', 'ongoing', NULL, 'Contrat en cours pour client 3'),
+    (4, 7, '2023-07-01', 'ongoing', NULL, 'Contrat en cours pour client 4'),
+    (4, 8, '2023-08-01', 'ongoing', NULL, 'Contrat en cours pour client 4'),
+    (5, 9, '2023-09-01', 'ongoing', NULL, 'Contrat en cours pour client 5'),
+    (5,  10, '2023-10-01', 'ongoing', NULL, 'Contrat en cours pour client 5');
+
+-- Insertion des données en ma possession dans la table bill
+INSERT INTO bill (contract_id, date_of_bill, gross, discount, rising, status_bill, commentary)
+VALUES 
+    (1, '2023-10-05', 990, 10, 980, 'payed', 'Facture payée pour contrat 1'),
+    (1, '2023-11-05', 990, 10, 980, 'not payed', 'Facture impayée pour contrat 1'),
+    (2, '2023-10-10', 690, 10, 680, 'payed', 'Facture payée pour contrat 2'),
+    (2, '2023-11-10', 690, 10, 680, 'payed', 'Facture payée pour contrat 2'),
+    (3, '2023-11-15', 1490, 100, 1390, 'payed', 'Facture payée pour contrat 3'),
+    (3, '2023-11-20', 1490, 100, 1390, 'payed', 'Facture payée pour contrat 3'),
+    (4, '2023-11-25', 450, 10, 440, 'not payed', 'Facture impayée pour contrat 4'),
+    (4, '2023-11-30', 450, 10, 440, 'not payed', 'Facture impayée pour contrat 4'),
+    (5, '2023-12-05', 450, 10, 440, 'payed', 'Facture payée pour contrat 5'),
+    (5, '2023-12-10', 450, 10, 440, 'payed', 'Facture payée pour contrat 5'),
+    (6, '2023-12-15', 60, 5, 55, 'not payed', 'Facture impayée pour contrat 6'),
+    (6, '2023-12-20', 60, 5, 55, 'not payed', 'Facture impayée pour contrat 6'),
+    (7, '2023-12-25', 170, 20, 150, 'payed', 'Facture payée pour contrat 7'),
+    (7, '2023-12-30', 170, 20, 150, 'not payed', 'Facture impayée pour contrat 7'),
+    (8, '2024-01-05', 590, 50, 540, 'not payed', 'Facture impayée pour contrat 8'),
+    (8, '2024-01-10', 590, 50, 540, 'not payed', 'Facture impayée pour contrat 8');
+
+--vérification des contraintes cycliques
+select bill.date_of_bill
+from bill
+where date_of_bill < (SELECT date_start_contract FROM contract WHERE contract_id = bill.contract_id)
+;
+select bill.gross
+from bill
+where gross != (SELECT price FROM package WHERE package.id_package = (SELECT package_id FROM contract WHERE contract.id_contract = bill.contract_id))
+;
+--voir qui sont les contacts qui bossent pour plusieurs clients
+select contact.first_name, contact.phone_number
+from client
+inner join contact
+on client.contact_id = contact.id_contact
+GROUP BY contact.id_contact
+HAVING COUNT(client.id_client) > 1
+;
+--vérifier que le montant final soit le montant brut moins la ristourne
+select bill.id_bill
+from bill
+where rising != gross - discount
+;
+

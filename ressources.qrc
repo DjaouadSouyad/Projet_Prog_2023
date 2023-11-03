@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>Logo_Blink.jpeg</file>
+  </qresource>
+</RCC>
