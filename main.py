@@ -10,25 +10,8 @@ from PyQt5.uic import loadUi
 from FenetreRecherche import Ui_Fenetre_Recherche
 from FenetreAjout import Ui_Fenetre_Ajout
 from FenetreSupprimer import Ui_Fenetre_Supprimer
+from projet_db_blink import Gestion_BD
 
-class Gestion_BD:
-    def __init__(self, db_file):
-        self.conn = self.create_connection(db_file)
-
-    def create_connection(self, db_file):
-        """ Crée une connexion à une base de données SQLite """
-        conn = None
-        try:
-            conn = sqlite3.connect(db_file)
-            print(sqlite3.version)
-            return conn
-        except Error as e:
-            print(e)
-        return None
-
-    def close_connection(self):
-        if self.conn is not None:
-            self.conn.close()
 
 def run_app():
     app = QtWidgets.QApplication(sys.argv)
