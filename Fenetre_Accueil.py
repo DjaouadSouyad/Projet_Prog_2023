@@ -9,7 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from FenetreAjout import Ui_Fenetre_Ajout
+from PyQt5.QtWidgets import QMainWindow
 
 class Ui_Page_Accueil(object):
     def setupUi(self, Page_Accueil):
@@ -53,6 +54,7 @@ class Ui_Page_Accueil(object):
         self.Button_Ajout = QtWidgets.QPushButton(self.Frame_Boutons)
         self.Button_Ajout.setObjectName("Button_Ajout")
         self.horizontalLayout.addWidget(self.Button_Ajout)
+        self.Button_Ajout.clicked.connect(self.ouvrir_fenetre_ajout) # comment lier une fonction a un bouton!
         self.Button_Retirer = QtWidgets.QPushButton(self.Frame_Boutons)
         self.Button_Retirer.setObjectName("Button_Retirer")
         self.horizontalLayout.addWidget(self.Button_Retirer)
@@ -68,6 +70,13 @@ class Ui_Page_Accueil(object):
 
         self.retranslateUi(Page_Accueil)
         QtCore.QMetaObject.connectSlotsByName(Page_Accueil)
+        
+    def ouvrir_fenetre_ajout(self, ): # la fonction liée
+        self.w = QMainWindow()
+        ui = Ui_Fenetre_Ajout() # on génere la nouvelle ui
+        ui.setupUi(self.w)
+        self.w.show() # on la show
+
 
     def retranslateUi(self, Page_Accueil):
         _translate = QtCore.QCoreApplication.translate
@@ -82,6 +91,7 @@ class Ui_Page_Accueil(object):
         self.Button_Recherche.setText(_translate("Page_Accueil", "Recherche"))
         self.Button_Ajout.setText(_translate("Page_Accueil", "Ajouter des données"))
         self.Button_Retirer.setText(_translate("Page_Accueil", "Retirer des données"))
+
 import ressources_rc
 
 
